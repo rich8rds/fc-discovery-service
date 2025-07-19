@@ -189,34 +189,6 @@
             </paths>
           </extraDirectories>
         </configuration>
-
-<!--        <configuration>-->
-<!--          <from>-->
-<!--            <image>eclipse-temurin:${java.version}-jre</image>-->
-<!--          </from>-->
-<!--          <to>-->
-<!--            <image>registry.hub.docker.com/rich8rds/${project.artifactId}:latest</image>-->
-<!--          </to>-->
-<!--          <container>-->
-<!--            <mainClass>com.favourite.collections.DiscoveryServiceApplication</mainClass>-->
-<!--            <args></args>-->
-<!--            <jvmFlags>-->
-<!--              <jvmFlag>-javaagent:/opentelemetry-javaagent.jar</jvmFlag>-->
-<!--              <jvmFlag>-Xmx1G</jvmFlag>-->
-<!--              <creationTime>USE_CURRENT_TIMESTAMP</creationTime>-->
-<!--            </jvmFlags>-->
-<!--          </container>-->
-<!--          <extraDirectories>-->
-<!--            <paths>-->
-<!--              <path>-->
-<!--                <from>${project.basedir}/docker/collector</from>-->
-<!--                <into>/</into>-->
-<!--              </path>-->
-<!--            </paths>-->
-<!--          </extraDirectories>-->
-<!--          <containerizingMode>packaged</containerizingMode>-->
-<!--        </configuration>-->
-
         <executions>
           <execution>
             <goals>
