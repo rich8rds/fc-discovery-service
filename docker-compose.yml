@@ -1,5 +1,5 @@
 services:
-  favourite-collections:
+  discovery-service:
     image: "${ECR_SERVER}/${ECR_REPOSITORY}:discovery-service-${ENV}-${DATE}-${SHORT_SHA}"
 #    build: ./
     container_name: discovery-service

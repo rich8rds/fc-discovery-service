@@ -1,5 +1,5 @@
 services:
-  favourite-collections:
+  discovery-service:
     build: ./
     container_name: discovery-service
     ports:
@@ -8,6 +8,8 @@ services:
       - "4080"
     networks:
       - fcNet
+    env_file:
+      - ./.env
     environment:
       - SPRING_PROFILES_ACTIVE=local
       - OTEL_TRACES_EXPORTER=logging
@@ -19,5 +21,5 @@ services:
 networks:
   fcNet:
     name: fcNet
-    external: true
+#    external: true
     driver: bridge
