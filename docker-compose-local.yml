@@ -1,0 +1,23 @@
+services:
+  favourite-collections:
+    build: ./
+    container_name: discovery-service
+    ports:
+      - "4080:4080"
+    expose:
+      - "4080"
+    networks:
+      - fcNet
+    environment:
+      - SPRING_PROFILES_ACTIVE=local
+      - OTEL_TRACES_EXPORTER=logging
+      - OTEL_METRICS_EXPORTER=logging
+      - OTEL_LOGS_EXPORTER=logging
+      - OTEL_METRIC_EXPORT_INTERVAL=15000
+      - TZ=Africa/Lagos
+
+networks:
+  fcNet:
+    name: fcNet
+    external: true
+    driver: bridge

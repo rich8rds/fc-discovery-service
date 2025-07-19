@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.favourite.collections</groupId>
+  <artifactId>discovery-service</artifactId>
+  <version>1.0</version>
+  <name>fc-discovery-service</name>
+  <description>Discovery service for favourite-collections service</description>
+  <packaging>jar</packaging>
+
+  <properties>
+    <java.version>17</java.version>
+    <java.version.target>17</java.version.target>
+    <spotless.version>2.35.0</spotless.version>
+    <spring-boot-admin.version>3.3.2</spring-boot-admin.version>
+    <spring.boot.maven.plugin.version>3.3.2</spring.boot.maven.plugin.version>
+    <spring.boot.maven.compiler.plugin.version>3.13.0</spring.boot.maven.compiler.plugin.version>
+    <spring.boot.dependencies.version>3.3.2</spring.boot.dependencies.version>
+    <spring-cloud.version>2023.0.1</spring-cloud.version>
+    <jib.maven.plugin.version>3.4.3</jib.maven.plugin.version>
+    <exec.maven.plugin.version>3.1.0</exec.maven.plugin.version>
+  </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>de.codecentric</groupId>
+        <artifactId>spring-boot-admin-dependencies</artifactId>
+        <version>${spring-boot-admin.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-dependencies</artifactId>
+        <version>${spring.boot.dependencies.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework.cloud</groupId>
+        <artifactId>spring-cloud-dependencies</artifactId>
+        <version>${spring-cloud.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-security</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-actuator</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.cloud</groupId>
+      <artifactId>spring-cloud-starter-netflix-eureka-server</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.security</groupId>
+      <artifactId>spring-security-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>de.codecentric</groupId>
+      <artifactId>spring-boot-admin-starter-client</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.cloud</groupId>
+      <artifactId>spring-cloud-starter-openfeign</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.diffplug.spotless</groupId>
+      <artifactId>spotless-maven-plugin</artifactId>
+      <version>${spotless.version}</version>
+    </dependency>
+  </dependencies>
+
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>${spring.boot.maven.compiler.plugin.version}</version>
+        <configuration>
+          <source>${java.version}</source>
+          <target>${java.version.target}</target>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <exclude>
+              <groupId>org.projectlombok</groupId>
+              <artifactId>lombok</artifactId>
+            </exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>com.diffplug.spotless</groupId>
+        <artifactId>spotless-maven-plugin</artifactId>
+        <version>${spotless.version}</version>
+        <configuration>
+          <pom>
+            <includes>
+              <include>pom.xml</include>
+            </includes>
+          </pom>
+          <java>
+            <includes>
+              <include>src/main/java/**/*.java</include>
+              <include>src/test/java/**/*.java</include>
+            </includes>
+            <importOrder>
+              <wildcardsLast>true</wildcardsLast>
+              <order>java|jakarta,org,com,com.diffplug,,\#com.diffplug,\#</order>
+              <!-- or use <file>${project.basedir}/eclipse.importorder</file> -->
+            </importOrder>
+            <removeUnusedImports>true</removeUnusedImports>
+            <formatAnnotations>true</formatAnnotations>
+            <licenseHeader>
+              <content>/* Collections #$YEAR */</content>
+            </licenseHeader>
+          </java>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+        <version>${spring.boot.maven.plugin.version}</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>repackage</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>com.google.cloud.tools</groupId>
+        <artifactId>jib-maven-plugin</artifactId>
+        <version>${jib.maven.plugin.version}</version>
+
+        <configuration>
+          <from>
+            <image>eclipse-temurin:${java.version}-jre</image>
+          </from>
+<!--          <to>${project.artifactId}:${project.version}</to>-->
+          <to>
+            <image>registry.hub.docker.com/rich8rds/${project.artifactId}:latest</image>
+          </to>
+          <container>
+            <jvmFlags>
+              <jvmFlag>-javaagent:/opentelemetry-javaagent.jar</jvmFlag>
+              <jvmFlag>-Xmx1G</jvmFlag>
+            </jvmFlags>
+            <creationTime>USE_CURRENT_TIMESTAMP</creationTime>
+          </container>
+          <extraDirectories>
+            <paths>
+              <path>
+                <!-- Adjusted to point to the correct path relative to each microservice -->
+                <from>${project.basedir}/docker/collector</from>
+                <into>/</into>
+              </path>
+            </paths>
+          </extraDirectories>
+        </configuration>
+
+<!--        <configuration>-->
+<!--          <from>-->
+<!--            <image>eclipse-temurin:${java.version}-jre</image>-->
+<!--          </from>-->
+<!--          <to>-->
+<!--            <image>registry.hub.docker.com/rich8rds/${project.artifactId}:latest</image>-->
+<!--          </to>-->
+<!--          <container>-->
+<!--            <mainClass>com.favourite.collections.DiscoveryServiceApplication</mainClass>-->
+<!--            <args></args>-->
+<!--            <jvmFlags>-->
+<!--              <jvmFlag>-javaagent:/opentelemetry-javaagent.jar</jvmFlag>-->
+<!--              <jvmFlag>-Xmx1G</jvmFlag>-->
+<!--              <creationTime>USE_CURRENT_TIMESTAMP</creationTime>-->
+<!--            </jvmFlags>-->
+<!--          </container>-->
+<!--          <extraDirectories>-->
+<!--            <paths>-->
+<!--              <path>-->
+<!--                <from>${project.basedir}/docker/collector</from>-->
+<!--                <into>/</into>-->
+<!--              </path>-->
+<!--            </paths>-->
+<!--          </extraDirectories>-->
+<!--          <containerizingMode>packaged</containerizingMode>-->
+<!--        </configuration>-->
+
+        <executions>
+          <execution>
+            <goals>
+              <goal>build</goal>
+            </goals>
+            <phase>package</phase>
+          </execution>
+        </executions>
+      </plugin>
+
+    </plugins>
+  <finalName>DiscoveryService</finalName>
+</build>
+
+</project>
