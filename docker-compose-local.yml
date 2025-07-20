@@ -10,17 +10,21 @@ services:
       - "4080:4080"
     expose:
       - "4080"
+    network_mode: host
     networks:
       - fcNet
     env_file:
       - ./.env
     environment:
       - SPRING_PROFILES_ACTIVE=local
-      - OTEL_TRACES_EXPORTER=logging
-      - OTEL_METRICS_EXPORTER=logging
-      - OTEL_LOGS_EXPORTER=logging
-      - OTEL_METRIC_EXPORT_INTERVAL=15000
-      - TZ=Africa/Lagos
+      - SPRING_CONFIG_IMPORT=${SPRING_CONFIG_IMPORT}
+      - OTEL_TRACES_EXPORTER=${OTEL_TRACES_EXPORTER}
+      - OTEL_METRICS_EXPORTER=${OTEL_METRICS_EXPORTER}
+      - OTEL_LOGS_EXPORTER=${OTEL_LOGS_EXPORTER}
+      - OTEL_METRIC_EXPORT_INTERVAL=${OTEL_METRIC_EXPORT_INTERVAL}
+      - TZ=${TIMEZONE}
+      - EUREKA_HOSTNAME=${EUREKA_HOSTNAME}
+
 
 networks:
   fcNet:
