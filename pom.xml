@@ -166,10 +166,10 @@
           <from>
             <image>eclipse-temurin:${java.version}-jre</image>
           </from>
-          <to>${project.artifactId}:${project.version}</to>
-          <!--          <to>-->
-          <!--            <image>registry.hub.docker.com/rich8rds/${project.artifactId}:latest</image>-->
-          <!--          </to>-->
+<!--          <to>${project.artifactId}:${project.version}</to>-->
+                <to>
+                  <image>rich8rds/${project.artifactId}:latest</image>
+                </to>
           <container>
             <jvmFlags>
               <jvmFlag>-javaagent:/opentelemetry-javaagent.jar</jvmFlag>
