@@ -17,7 +17,7 @@ services:
     env_file:
       - ./.env
     environment:
-      - OTEL_SERVICE_NAME=order-service
+      - OTEL_SERVICE_NAME=discovery-service
       - SPRING_PROFILES_ACTIVE=docker
       - OTEL_TRACES_EXPORTER=${OTEL_TRACES_EXPORTER}
       - OTEL_METRICS_EXPORTER=${OTEL_METRICS_EXPORTER}
