@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.favourite.collections</groupId>
-  <artifactId>discovery-service</artifactId>
+  <artifactId>fc-discovery-service</artifactId>
   <version>1.0</version>
   <name>fc-discovery-service</name>
   <description>Discovery service for favourite-collections service</description>
@@ -146,30 +146,27 @@
       </plugin>
 
       <plugin>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <goals>
-              <goal>repackage</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-
-      <plugin>
         <groupId>com.google.cloud.tools</groupId>
         <artifactId>jib-maven-plugin</artifactId>
         <version>${jib.maven.plugin.version}</version>
-
         <configuration>
-          <from>
-            <image>eclipse-temurin:${java.version}-jre</image>
-          </from>
-<!--          <to>${project.artifactId}:${project.version}</to>-->
-                <to>
-                  <image>rich8rds/${project.artifactId}:latest</image>
-                </to>
+            <from>
+              <image>eclipse-temurin:23@sha256:2b47a8ea946ce1e5365a1562414ed576e378b7b670cadff3fb98ebecf2890cdc</image>
+              <platforms>
+                <platform>
+                  <architecture>arm64</architecture>
+                  <os>linux</os>
+                </platform>
+                <platform>
+                  <architecture>amd64</architecture>
+                  <os>linux</os>
+                </platform>
+              </platforms>
+            </from>
+              <!-- <to>${project.artifactId}:${project.version}</to>-->
+            <to>
+              <image>registry.hub.docker.com/rich8rds/${project.artifactId}:latest</image>
+            </to>
           <container>
             <jvmFlags>
               <jvmFlag>-javaagent:/opentelemetry-javaagent.jar</jvmFlag>
@@ -197,8 +194,50 @@
         </executions>
       </plugin>
 
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>download-opentelemetry-javaagent</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <configuration>
+              <executable>sh</executable>
+              <arguments>
+                <argument>-c</argument>
+                <argument>
+                  <![CDATA[
+										  if [ ! -f "${project.basedir}/docker/collector/opentelemetry-javaagent.jar" ]; then
+											mkdir -p "${project.basedir}/docker/collector" &&
+											curl -L -o "${project.basedir}/docker/collector/opentelemetry-javaagent.jar" \
+											https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/download/v2.18.1/opentelemetry-javaagent.jar
+										  else
+											echo "opentelemetry-javaagent.jar already exists, skipping download"
+										  fi
+										]]>
+                </argument>
+              </arguments>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
     </plugins>
     <finalName>DiscoveryService</finalName>
   </build>
+
+  <repositories>
+    <repository>
+      <id>netflix-candidates</id>
+      <name>Netflix Candidates</name>
+      <url>https://artifactory-oss.prod.netflix.net/artifactory/maven-oss-candidates</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
 
 </project>

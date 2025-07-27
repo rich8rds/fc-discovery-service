@@ -38,6 +38,6 @@ build/
 .env
 
 opentelemetry-javaagent.jar
-./docker/
+./docker/opentelemetry-javaagent.jar
 
 logs
