@@ -1,7 +1,6 @@
 services:
   discovery-service:
-#    build: ./
-    image: ${ECR_REPOSITORY}/fc-discovery-service:latest
+    build: ./
     container_name: discovery-service
     healthcheck:
       test: [ "CMD", 'sh', '-c', 'echo -e "Checking service availability"; while ! nc -z "discovery-service" 4080; do sleep 1; printf "-"; done; echo -e " >> Service has started";' ]
@@ -17,13 +16,13 @@ services:
     env_file:
       - ./.env
     environment:
-      - OTEL_SERVICE_NAME=discovery-service
-      - SPRING_PROFILES_ACTIVE=docker
-      - OTEL_TRACES_EXPORTER=${OTEL_TRACES_EXPORTER}
-      - OTEL_METRICS_EXPORTER=${OTEL_METRICS_EXPORTER}
-      - OTEL_LOGS_EXPORTER=${OTEL_LOGS_EXPORTER}
-      - OTEL_METRIC_EXPORT_INTERVAL=${OTEL_METRIC_EXPORT_INTERVAL}
-      - TZ=${TIMEZONE}
+      TZ: ${TIMEZONE}
+      OTEL_SERVICE_NAME: "discovery-service"
+      SPRING_PROFILES_ACTIVE: "docker"
+      OTEL_RESOURCE_ATTRIBUTES: ${OTEL_RESOURCE_ATTRIBUTES}
+      OTEL_EXPORTER_OTLP_PROTOCOL: ${OTEL_EXPORTER_OTLP_PROTOCOL}
+      OTEL_EXPORTER_OTLP_ENDPOINT: ${OTEL_EXPORTER_OTLP_ENDPOINT}
+      OTEL_METRIC_EXPORT_INTERVAL: ${OTEL_METRIC_EXPORT_INTERVAL}
 
 networks:
   fcNet:
