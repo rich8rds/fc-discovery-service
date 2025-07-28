@@ -1,6 +1,6 @@
 services:
   discovery-service:
-    image: ${ECR_REPOSITORY}/fc-discovery-service:latest
+    image: ${ECR_REPOSITORY}/fc-discovery-service:1.0.0
     container_name: discovery-service
     healthcheck:
       test: [ "CMD", 'sh', '-c', 'echo -e "Checking service availability"; while ! nc -z "discovery-service" 4080; do sleep 1; printf "-"; done; echo -e " >> Service has started";' ]
