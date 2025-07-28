@@ -101,6 +101,13 @@
         <configuration>
           <source>${java.version}</source>
           <target>${java.version}</target>
+          <annotationProcessorPaths>
+            <path>
+              <groupId>org.projectlombok</groupId>
+              <artifactId>lombok</artifactId>
+              <version>${lombok.version}</version>
+            </path>
+          </annotationProcessorPaths>
         </configuration>
       </plugin>
       <plugin>
@@ -149,24 +156,25 @@
         <groupId>com.google.cloud.tools</groupId>
         <artifactId>jib-maven-plugin</artifactId>
         <version>${jib.maven.plugin.version}</version>
+
         <configuration>
-            <from>
-              <image>eclipse-temurin:23@sha256:2b47a8ea946ce1e5365a1562414ed576e378b7b670cadff3fb98ebecf2890cdc</image>
-              <platforms>
-                <platform>
-                  <architecture>arm64</architecture>
-                  <os>linux</os>
-                </platform>
-                <platform>
-                  <architecture>amd64</architecture>
-                  <os>linux</os>
-                </platform>
-              </platforms>
-            </from>
-              <!-- <to>${project.artifactId}:${project.version}</to>-->
-            <to>
-              <image>registry.hub.docker.com/rich8rds/${project.artifactId}:latest</image>
-            </to>
+          <from>
+            <image>eclipse-temurin:23@sha256:2b47a8ea946ce1e5365a1562414ed576e378b7b670cadff3fb98ebecf2890cdc</image>
+            <platforms>
+              <platform>
+                <architecture>arm64</architecture>
+                <os>linux</os>
+              </platform>
+              <platform>
+                <architecture>amd64</architecture>
+                <os>linux</os>
+              </platform>
+            </platforms>
+          </from>
+          <!-- <to>${project.artifactId}:${project.version}</to>-->
+          <to>
+            <image>registry.hub.docker.com/rich8rds/${project.artifactId}:${project.version}</image>
+          </to>
           <container>
             <jvmFlags>
               <jvmFlag>-javaagent:/opentelemetry-javaagent.jar</jvmFlag>
@@ -197,6 +205,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>
+        <version>3.1.0</version>
         <executions>
           <execution>
             <id>download-opentelemetry-javaagent</id>
@@ -210,14 +219,14 @@
                 <argument>-c</argument>
                 <argument>
                   <![CDATA[
-										  if [ ! -f "${project.basedir}/docker/collector/opentelemetry-javaagent.jar" ]; then
-											mkdir -p "${project.basedir}/docker/collector" &&
-											curl -L -o "${project.basedir}/docker/collector/opentelemetry-javaagent.jar" \
-											https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/download/v2.18.1/opentelemetry-javaagent.jar
-										  else
-											echo "opentelemetry-javaagent.jar already exists, skipping download"
-										  fi
-										]]>
+                      if [ ! -f "${project.basedir}/docker/collector/opentelemetry-javaagent.jar" ]; then
+                        mkdir -p "${project.basedir}/docker/collector" &&
+                        curl -L -o "${project.basedir}/docker/collector/opentelemetry-javaagent.jar" \
+                        https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/download/v2.18.1/opentelemetry-javaagent.jar
+                      else
+                        echo "opentelemetry-javaagent.jar already exists, skipping download"
+                      fi
+                    ]]>
                 </argument>
               </arguments>
             </configuration>

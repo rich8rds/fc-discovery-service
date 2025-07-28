@@ -1,0 +1,153 @@
+services:
+
+  collector:
+    container_name: collector
+    image: otel/opentelemetry-collector-contrib:0.91.0
+    command:
+      - --config=/etc/otelcol-contrib/otel-collector.yml
+    volumes:
+      - ./docker/collector/otel-collector.yml:/etc/otelcol-contrib/otel-collector.yml
+    restart: always
+    networks:
+      - jaegerNet
+      - notificationsNet
+    ports:
+      - "4317" # OTLP gRPC receiver
+      - "8889" # Prometheus exporter metrics
+    depends_on:
+      - loki
+      - jaeger
+      - zipkin
+      - tempo
+
+  tempo:
+    container_name: tempo
+    image: grafana/tempo:2.3.1
+    command: [ "-config.file=/etc/tempo.yml" ]
+    volumes:
+      - ./docker/tempo/tempo.yml:/etc/tempo.yml
+    restart: always
+    networks:
+      - jaegerNet
+      - notificationsNet
+    ports:
+      - "4317"  # otlp grpc
+      - "3200"  # tempo as grafana datasource
+
+  loki:
+    container_name: loki
+    image: grafana/loki:latest
+    command: -config.file=/etc/loki/local-config.yaml
+    restart: always
+    networks:
+      - jaegerNet
+      - notificationsNet
+    ports:
+      - "3100"
+
+  prometheus:
+    container_name: prometheus
+    image: prom/prometheus
+    volumes:
+      - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --enable-feature=exemplar-storage
+      - --web.enable-remote-write-receiver
+    restart: always
+    networks:
+      - jaegerNet
+      - notificationsNet
+    ports:
+      - '9090:9090'
+    depends_on:
+      - collector
+
+  grafana:
+    container_name: grafana
+    image: grafana/grafana
+    volumes:
+      - ./docker/grafana/grafana-datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml
+    restart: always
+    networks:
+      - jaegerNet
+      - notificationsNet
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+      - loki
+      - jaeger
+      - zipkin
+      - tempo
+
+  jaeger:
+    container_name: jaeger
+    image: jaegertracing/all-in-one:latest
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+    restart: always
+    networks:
+      - jaegerNet
+      - notificationsNet
+    ports:
+      - "16686:16686"
+      - "4317"
+
+  zipkin:
+    container_name: zipkin
+    image: openzipkin/zipkin:latest
+    restart: always
+    networks:
+      - jaegerNet
+      - notificationsNet
+    ports:
+      - "9411:9411"
+
+  fc-rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: fc-rabbitmq
+    networks:
+      - jaegerNet
+      - notificationsNet
+    ports:
+      - ${RABBITMQ_PORT}
+      - ${RABBITMQ_MANAGEMENT_PORT}
+    env_file:
+      - ./.env
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
+    volumes:
+      - ./.volumes/rabbitmq:/var/lib/rabbitmq/mnesia
+    restart: always
+    
+  redis-cache:
+    image: redis:7.4.1
+    container_name: redis-cache
+    hostname: redis-cache
+    ports:
+      - ${REDIS_PORT}
+    volumes:
+      - ./.docker/redis/redis.conf:/usr/local/etc/redis/redis.conf
+      - ./.volumes/redis:/var/lib/redis
+    env_file:
+      - ./.env
+    networks:
+      - notificationsNet
+      - jaegerNet
+    restart: always
+    
+networks:
+  fcNet:
+    name: fcNet
+    driver: bridge
+  dbNet:
+    name: dbNet
+    driver: bridge
+  notificationsNet:
+    name: notificationsNet
+    driver: bridge
+  jaegerNet:
+    name: jaegerNet
+    driver: bridge
