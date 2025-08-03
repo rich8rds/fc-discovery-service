@@ -41,3 +41,5 @@ opentelemetry-javaagent.jar
 ./docker/opentelemetry-javaagent.jar
 
 logs
+
+.volumes/
