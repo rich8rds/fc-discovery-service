@@ -1,7 +1,7 @@
 services:
 
   collector:
-    container_name: collector
+    container_name: fc-collector
     image: otel/opentelemetry-collector-contrib:0.91.0
     command:
       - --config=/etc/otelcol-contrib/otel-collector.yml
@@ -21,7 +21,7 @@ services:
       - tempo
 
   tempo:
-    container_name: tempo
+    container_name: fc-tempo
     image: grafana/tempo:2.3.1
     command: [ "-config.file=/etc/tempo.yml" ]
     volumes:
@@ -35,7 +35,7 @@ services:
       - "3200"  # tempo as grafana datasource
 
   loki:
-    container_name: loki
+    container_name: fc-loki
     image: grafana/loki:latest
     command: -config.file=/etc/loki/local-config.yaml
     restart: always
@@ -46,7 +46,7 @@ services:
       - "3100"
 
   prometheus:
-    container_name: prometheus
+    container_name: fc-prometheus
     image: prom/prometheus
     volumes:
       - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
@@ -64,7 +64,7 @@ services:
       - collector
 
   grafana:
-    container_name: grafana
+    container_name: fc-grafana
     image: grafana/grafana
     volumes:
       - ./docker/grafana/grafana-datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml
@@ -82,7 +82,7 @@ services:
       - tempo
 
   jaeger:
-    container_name: jaeger
+    container_name: fc-jaeger
     image: jaegertracing/all-in-one:latest
     environment:
       - COLLECTOR_OTLP_ENABLED=true
@@ -95,7 +95,7 @@ services:
       - "4317"
 
   zipkin:
-    container_name: zipkin
+    container_name: fc-zipkin
     image: openzipkin/zipkin:latest
     restart: always
     networks:
