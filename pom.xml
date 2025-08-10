@@ -4,7 +4,7 @@
 
   <groupId>com.favourite.collections</groupId>
   <artifactId>fc-discovery-service</artifactId>
-  <version>1.0.o</version>
+  <version>1.0.0</version>
   <name>fc-discovery-service</name>
   <description>Discovery service for favourite-collections service</description>
   <packaging>jar</packaging>
