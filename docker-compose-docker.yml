@@ -27,8 +27,7 @@ services:
 networks:
   fcNet:
     name: fcNet
-    driver: bridge
+    external: true
   jaegerNet:
     name: jaegerNet
     external: true
-    driver: bridge

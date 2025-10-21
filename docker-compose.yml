@@ -12,7 +12,6 @@ services:
       - "4080"
     networks:
       - fcNet
-      - jaegerNet
     env_file:
       - ./.env
     environment:
@@ -26,9 +25,4 @@ services:
 
 networks:
   fcNet:
-    name: fcNet
-    driver: bridge
-  jaegerNet:
-    name: jaegerNet
     external: true
-    driver: bridge

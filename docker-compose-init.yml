@@ -10,9 +10,9 @@ services:
     ports:
       - "6379:6379"
 #      - "6380:6379"
+#    network_mode: host
     networks:
-      - jaegerNet
-      - notificationsNet
+      - fcNet
     restart: unless-stopped
     command: redis-server --save 60 1 --loglevel warning
     volumes:
@@ -24,9 +24,10 @@ services:
     restart: always
     ports:
       - "9411:9411"
+    expose:
+      - "9411"
     networks:
-      - jaegerNet
-      - notificationsNet
+      - fcNet
     healthcheck:
       test: ["CMD", "wget", "--spider", "-q", "http://localhost:9411/health"]
       interval: 10s
@@ -47,8 +48,7 @@ services:
       - "4317:4317" # OTLP gRPC receiver
       - "8889:8889" # Prometheus exporter metrics
     networks:
-      - jaegerNet
-      - notificationsNet
+      - fcNet
     depends_on:
       - loki
       - jaeger
@@ -67,8 +67,8 @@ services:
       - "4317"  # otlp grpc
       - "3200"  # tempo as grafana datasource
     networks:
-      - jaegerNet
-      - notificationsNet
+      - fcNet
+
 
   loki:
     container_name: fc-loki
@@ -78,8 +78,8 @@ services:
     ports:
       - "3100"
     networks:
-      - jaegerNet
-      - notificationsNet
+      - fcNet
+
 
   prometheus:
     container_name: fc-prometheus
@@ -94,8 +94,8 @@ services:
     ports:
       - '9090:9090'
     networks:
-      - jaegerNet
-      - notificationsNet
+      - fcNet
+
     depends_on:
       - collector
 
@@ -108,8 +108,8 @@ services:
     ports:
       - "3001:3000"
     networks:
-      - jaegerNet
-      - notificationsNet
+      - fcNet
+
     environment:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=password
@@ -130,15 +130,15 @@ services:
       - "16686:16686"
       - "4317"
     networks:
-      - jaegerNet
-      - notificationsNet
+      - fcNet
+
 
   fc-rabbitmq:
     image: rabbitmq:3-management-alpine
     container_name: fc-rabbitmq
     networks:
-      - jaegerNet
-      - notificationsNet
+      - fcNet
+
     ports:
       - ${RABBITMQ_PORT}
       - ${RABBITMQ_MANAGEMENT_PORT}
@@ -158,13 +158,4 @@ volumes:
 networks:
   fcNet:
     name: fcNet
-    driver: bridge
-  dbNet:
-    name: dbNet
-    driver: bridge
-  notificationsNet:
-    name: notificationsNet
-    driver: bridge
-  jaegerNet:
-    name: jaegerNet
     driver: bridge
